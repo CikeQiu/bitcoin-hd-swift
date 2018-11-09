@@ -977,7 +977,40 @@
 			};
 			name = Debug;
 		};
-		43FC0801E99AC473F3A190FB6B31F7F8 /* Debug */ = {
+		2DBF29753205A1B7F94BAE81617AF6CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 367888D99874AC8B7203E304D0CCAD4A /* CKMnemonic.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/CKMnemonic/CKMnemonic-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/CKMnemonic/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/CKMnemonic/CKMnemonic.modulemap";
+				PRODUCT_MODULE_NAME = CKMnemonic;
+				PRODUCT_NAME = CKMnemonic;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		30DD8D111ACDCA313316CDDDA5CBC3DE /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4CB213D7363890464ACF704F69A6A8C1 /* ASKSecp256k1.xcconfig */;
 			buildSettings = {
@@ -1001,12 +1034,13 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
 		591B1E102EC20F349DA84B7546DC6481 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1111,39 +1145,6 @@
 			};
 			name = Debug;
 		};
-		91BFFFA13D0C53EA0DABD7861FE56F1A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 367888D99874AC8B7203E304D0CCAD4A /* CKMnemonic.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/CKMnemonic/CKMnemonic-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/CKMnemonic/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/CKMnemonic/CKMnemonic.modulemap";
-				PRODUCT_MODULE_NAME = CKMnemonic;
-				PRODUCT_NAME = CKMnemonic;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		95F01B083A07C3A76AD95D2ADAAE6364 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 01193A80D3105CB88397E66641229DCB /* CryptoSwift.xcconfig */;
@@ -1177,6 +1178,37 @@
 			};
 			name = Release;
 		};
+		B62FA56719DC2CBDFF942580ECBF6B4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4CB213D7363890464ACF704F69A6A8C1 /* ASKSecp256k1.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/ASKSecp256k1/ASKSecp256k1-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/ASKSecp256k1/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/ASKSecp256k1/ASKSecp256k1.modulemap";
+				PRODUCT_MODULE_NAME = ASKSecp256k1;
+				PRODUCT_NAME = ASKSecp256k1;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 		C3AEF5544C81707014F6AC2CF965965A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 01193A80D3105CB88397E66641229DCB /* CryptoSwift.xcconfig */;
@@ -1209,39 +1241,7 @@
 			};
 			name = Debug;
 		};
-		E39E11BF9863831E744CFC9484654B95 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4CB213D7363890464ACF704F69A6A8C1 /* ASKSecp256k1.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/ASKSecp256k1/ASKSecp256k1-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/ASKSecp256k1/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/ASKSecp256k1/ASKSecp256k1.modulemap";
-				PRODUCT_MODULE_NAME = ASKSecp256k1;
-				PRODUCT_NAME = ASKSecp256k1;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		E4FA8A5E8ABF080CC628E3B2E4522D0D /* Debug */ = {
+		F8286C4D046A3D9C4DEAF4C3B57E7210 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 367888D99874AC8B7203E304D0CCAD4A /* CKMnemonic.xcconfig */;
 			buildSettings = {
@@ -1266,7 +1266,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1389,8 +1389,8 @@
 		840399F5D1DE9355AED57FF0EEFAE3C6 /* Build configuration list for PBXNativeTarget "ASKSecp256k1" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				43FC0801E99AC473F3A190FB6B31F7F8 /* Debug */,
-				E39E11BF9863831E744CFC9484654B95 /* Release */,
+				B62FA56719DC2CBDFF942580ECBF6B4B /* Debug */,
+				30DD8D111ACDCA313316CDDDA5CBC3DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1407,8 +1407,8 @@
 		E31F2191D77E3FC6F4A741FFCC8E46E2 /* Build configuration list for PBXNativeTarget "CKMnemonic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E4FA8A5E8ABF080CC628E3B2E4522D0D /* Debug */,
-				91BFFFA13D0C53EA0DABD7861FE56F1A /* Release */,
+				F8286C4D046A3D9C4DEAF4C3B57E7210 /* Debug */,
+				2DBF29753205A1B7F94BAE81617AF6CC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

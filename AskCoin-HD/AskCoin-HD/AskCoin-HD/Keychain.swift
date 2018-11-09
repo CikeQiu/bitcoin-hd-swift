@@ -22,252 +22,255 @@ let BTCKeychainHardenedSymbol = "'"
 let BTCKeychainPathSeparator = "/"
 
 public class Keychain: NSObject {
-	
-	enum KeyDerivationError: Error {
-		case indexInvalid
-		case pathInvalid
-		case privateKeyNil
-		case publicKeyNil
-		case chainCodeNil
-		case notMasterKey
-	}
-	
-	var privateKey: Data?
-	//	private var publicKey: Data?
-	private var chainCode: Data?
-	
-	fileprivate var isMasterKey = false
-	
-	var network = Network()
-	var depth: UInt8 = 0
-	var hardened = false
-	var index: UInt32 = 0
-	
-	override init() {
-		
-	}
-	
-	public convenience init(seedString: String) throws {
-		let seed = seedString.ck_mnemonicData()
-		let seedBytes = seed.bytes
-		do {
-			let hmac = try HMAC(key: "Bitcoin seed", variant: .sha512).authenticate(seedBytes)
-			self.init(hmac: hmac)
-			isMasterKey = true
-		} catch {
-			throw error
-		}
-	}
-	
-	private init(hmac: Array<UInt8>) {
-		privateKey = Data(hmac[0..<32])
-		chainCode = Data(hmac[32..<64])
-	}
-	
-	public lazy var identifier: Data? = {
-		if let pubKey = self.publicKey {
-			return pubKey.ask_BTCHash160()
-		}
-		return nil
-	}()
-	
-	public var parentFingerprint: UInt32 = 0
-	
-	public lazy var fingerprint: UInt32 = {
-		if let id = self.identifier {
-			return UInt32(bytes: id.bytes[0..<4])
-		}
-		return 0
-	}()
-	
-	lazy var publicKey: Data? = {
-		guard let prvKey = self.privateKey else {
-			return nil
-		}
-		return CKSecp256k1.generatePublicKey(withPrivateKey: prvKey, compression: true)
-	}()
-	
-	// MARK: - Extended private key
-	public lazy var extendedPrivateKey: String = {
-		self.extendedPrivateKeyData.ask_base58Check()
-	}()
-	
-	public lazy var extendedPrivateKeyData: Data = {
-		guard self.privateKey != nil else {
-			return Data()
-		}
-		
-		var toReturn = Data()
-		
-		let version = self.network.isMainNet ? BTCKeychainMainnetPrivateVersion : BTCKeychainTestnetPrivateVersion
-		toReturn += self.extendedKeyPrefix(with: version)
-		
-		toReturn += UInt8(0).ask_hexToData()
-		
-		if let prikey = self.privateKey {
-			toReturn += prikey
-		}
-		
-		return toReturn
-	}()
-	
-	// MARK: - Extended public key
-	public lazy var extendedPublicKey: String = {
-		self.extendedPublicKeyData.ask_base58Check()
-	}()
-	
-	public lazy var extendedPublicKeyData: Data = {
-		guard self.publicKey != nil else {
-			return Data()
-		}
-		
-		var toReturn = Data()
-		
-		let version = self.network.isMainNet ? BTCKeychainMainnetPublicVersion : BTCKeychainTestnetPublicVersion
-		toReturn += self.extendedKeyPrefix(with: version)
-		
-		if let pubkey = self.publicKey {
-			toReturn += pubkey
-		}
-		
-		return toReturn
-	}()
-	
-	func extendedKeyPrefix(with version: UInt32) -> Data {
-		var toReturn = Data()
-		
-		let versionData = version.ask_hexToData()
-		toReturn += versionData
-		
-		let depthData = depth.ask_hexToData()
-		toReturn += depthData
-		
-		let parentFPData = parentFingerprint.ask_hexToData()
-		toReturn += parentFPData
-		
-		let childIndex = hardened ? (0x80000000 | index) : index
-		let childIndexData = childIndex.ask_hexToData()
-		toReturn += childIndexData
-		
-		if let cCode = chainCode {
-			toReturn += cCode
-		}
-		else
-		{
-			print(KeyDerivationError.chainCodeNil)
-		}
-		
-		return toReturn
-	}
-	
-	public func derivedKeychain(at path: String) throws -> Keychain {
-		
-		if path == BTCMasterKeychainPath || path == BTCKeychainPathSeparator || path == "" {
-			return self
-		}
-		
-		var paths = path.components(separatedBy: BTCKeychainPathSeparator)
-		if path.hasPrefix(BTCMasterKeychainPath) {
-			paths.removeFirst()
-		}
-		
-		var kc = self
-		
-		for indexString in paths {
-			var isHardened = false
-			var temp = indexString
-			if indexString.hasSuffix(BTCKeychainHardenedSymbol) {
-				isHardened = true
-				temp = temp.substring(to: temp.index(temp.endIndex, offsetBy: -1))
-			}
-			if let index = UInt32(temp) {
-				kc = try kc.derivedKeychain(at: index, hardened: isHardened)
-				continue
-			}
-			throw KeyDerivationError.pathInvalid
-		}
-		
-		return kc
-	}
-	
-	public func derivedKeychain(at index: UInt32, hardened: Bool = true) throws -> Keychain {
-		
-		let edge: UInt32 = 0x80000000
-		
-		guard (edge & UInt32(index)) == 0 else {
-			throw KeyDerivationError.indexInvalid
-		}
-		
-		guard let prvKey = privateKey else {
-			throw KeyDerivationError.privateKeyNil
-		}
-		
-		guard let pubKey = publicKey else {
-			throw KeyDerivationError.publicKeyNil
-		}
-		
-		guard let chCode = chainCode else {
-			throw KeyDerivationError.chainCodeNil
-		}
-		
-		var data = Data()
-		
-		if hardened {
-			let padding: UInt8 = 0
-			data += padding.ask_hexToData()
-			data += prvKey
-		}
-		else
-		{
-			data += pubKey
-		}
-		
-		let indexBE = hardened ? (edge + index) : index
-		data += indexBE.ask_hexToData()
-		
-		let digestArray = try HMAC(key: chCode.bytes, variant: .sha512).authenticate(data.bytes)
-		
-		let factor = BInt(data: Data(digestArray[0..<32]))
-		let curveOrder = BInt(hex: "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
-		
-		let derivedKeychain = Keychain(hmac: digestArray)
-		
-		let pkNum = BInt(data: Data(prvKey))
-		
-		let pkData = ((pkNum + factor) % curveOrder).data
-		
-		derivedKeychain.privateKey = pkData
-		derivedKeychain.depth = depth + 1
-		derivedKeychain.parentFingerprint = fingerprint
-		derivedKeychain.index = index
-		derivedKeychain.hardened = hardened
-		
-		return derivedKeychain
-	}
-	
+    
+    enum KeyDerivationError: Error {
+        case indexInvalid
+        case pathInvalid
+        case privateKeyNil
+        case publicKeyNil
+        case chainCodeNil
+        case notMasterKey
+    }
+    
+    var privateKey: Data?
+    //    private var publicKey: Data?
+    private var chainCode: Data?
+    
+    fileprivate var isMasterKey = false
+    
+    var network: Network = Network(networkType: .main, xPubkey: BTCKeychainMainnetPublicVersion, xPrivkey: BTCKeychainMainnetPrivateVersion)
+    var depth: UInt8 = 0
+    var hardened = false
+    var index: UInt32 = 0
+    
+    override init() {
+        
+    }
+    
+    public convenience init(seedString: String, network: Network? = nil) throws {
+        let seed = seedString.ck_mnemonicData()
+        let seedBytes = seed.bytes
+        do {
+            let hmac = try HMAC(key: "Bitcoin seed", variant: .sha512).authenticate(seedBytes)
+            self.init(hmac: hmac, network: network)
+            isMasterKey = true
+        } catch {
+            throw error
+        }
+    }
+    
+    private init(hmac: Array<UInt8>, network: Network? = nil) {
+        privateKey = Data(hmac[0..<32])
+        chainCode = Data(hmac[32..<64])
+        if let n = network {
+            self.network = n
+        }
+    }
+    
+    public lazy var identifier: Data? = {
+        if let pubKey = self.publicKey {
+            return pubKey.ask_BTCHash160()
+        }
+        return nil
+    }()
+    
+    public var parentFingerprint: UInt32 = 0
+    
+    public lazy var fingerprint: UInt32 = {
+        if let id = self.identifier {
+            return UInt32(bytes: id.bytes[0..<4])
+        }
+        return 0
+    }()
+    
+    lazy var publicKey: Data? = {
+        guard let prvKey = self.privateKey else {
+            return nil
+        }
+        return CKSecp256k1.generatePublicKey(withPrivateKey: prvKey, compression: true)
+    }()
+    
+    // MARK: - Extended private key
+    public lazy var extendedPrivateKey: String = {
+        self.extendedPrivateKeyData.ask_base58Check()
+    }()
+    
+    public lazy var extendedPrivateKeyData: Data = {
+        guard self.privateKey != nil else {
+            return Data()
+        }
+        
+        var toReturn = Data()
+        
+        let version = self.network.xPrivkey
+        toReturn += self.extendedKeyPrefix(with: version)
+        
+        toReturn += UInt8(0).ask_hexToData()
+        
+        if let prikey = self.privateKey {
+            toReturn += prikey
+        }
+        
+        return toReturn
+    }()
+    
+    // MARK: - Extended public key
+    public lazy var extendedPublicKey: String = {
+        self.extendedPublicKeyData.ask_base58Check()
+    }()
+    
+    public lazy var extendedPublicKeyData: Data = {
+        guard self.publicKey != nil else {
+            return Data()
+        }
+        
+        var toReturn = Data()
+        
+        let version = self.network.xPubkey
+        toReturn += self.extendedKeyPrefix(with: version)
+        
+        if let pubkey = self.publicKey {
+            toReturn += pubkey
+        }
+        
+        return toReturn
+    }()
+    
+    func extendedKeyPrefix(with version: UInt32) -> Data {
+        var toReturn = Data()
+        
+        let versionData = version.ask_hexToData()
+        toReturn += versionData
+        
+        let depthData = depth.ask_hexToData()
+        toReturn += depthData
+        
+        let parentFPData = parentFingerprint.ask_hexToData()
+        toReturn += parentFPData
+        
+        let childIndex = hardened ? (0x80000000 | index) : index
+        let childIndexData = childIndex.ask_hexToData()
+        toReturn += childIndexData
+        
+        if let cCode = chainCode {
+            toReturn += cCode
+        }
+        else
+        {
+            print(KeyDerivationError.chainCodeNil)
+        }
+        
+        return toReturn
+    }
+    
+    public func derivedKeychain(at path: String, network: Network? = nil) throws -> Keychain {
+        
+        if path == BTCMasterKeychainPath || path == BTCKeychainPathSeparator || path == "" {
+            return self
+        }
+        
+        var paths = path.components(separatedBy: BTCKeychainPathSeparator)
+        if path.hasPrefix(BTCMasterKeychainPath) {
+            paths.removeFirst()
+        }
+        
+        var kc = self
+        
+        for indexString in paths {
+            var isHardened = false
+            var temp = indexString
+            if indexString.hasSuffix(BTCKeychainHardenedSymbol) {
+                isHardened = true
+                temp = temp.substring(to: temp.index(temp.endIndex, offsetBy: -1))
+            }
+            if let index = UInt32(temp) {
+                kc = try kc.derivedKeychain(at: index, hardened: isHardened, network: network != nil ? network : self.network)
+                continue
+            }
+            throw KeyDerivationError.pathInvalid
+        }
+        
+        return kc
+    }
+    
+    public func derivedKeychain(at index: UInt32, hardened: Bool = true, network: Network? = nil) throws -> Keychain {
+        
+        let edge: UInt32 = 0x80000000
+        
+        guard (edge & UInt32(index)) == 0 else {
+            throw KeyDerivationError.indexInvalid
+        }
+        
+        guard let prvKey = privateKey else {
+            throw KeyDerivationError.privateKeyNil
+        }
+        
+        guard let pubKey = publicKey else {
+            throw KeyDerivationError.publicKeyNil
+        }
+        
+        guard let chCode = chainCode else {
+            throw KeyDerivationError.chainCodeNil
+        }
+        
+        var data = Data()
+        
+        if hardened {
+            let padding: UInt8 = 0
+            data += padding.ask_hexToData()
+            data += prvKey
+        }
+        else
+        {
+            data += pubKey
+        }
+        
+        let indexBE = hardened ? (edge + index) : index
+        data += indexBE.ask_hexToData()
+        
+        let digestArray = try HMAC(key: chCode.bytes, variant: .sha512).authenticate(data.bytes)
+        
+        let factor = BInt(data: Data(digestArray[0..<32]))
+        let curveOrder = BInt(hex: "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
+        
+        let derivedKeychain = Keychain(hmac: digestArray, network: network != nil ? network : self.network)
+        
+        let pkNum = BInt(data: Data(prvKey))
+        
+        let pkData = ((pkNum + factor) % curveOrder).data
+        
+        derivedKeychain.privateKey = pkData
+        derivedKeychain.depth = depth + 1
+        derivedKeychain.parentFingerprint = fingerprint
+        derivedKeychain.index = index
+        derivedKeychain.hardened = hardened
+        
+        return derivedKeychain
+    }
+    
 }
 
 // MARK: - BIP44
 extension Keychain {
-	
-	public func checkMasterKey() throws {
-		guard isMasterKey else {
-			throw KeyDerivationError.notMasterKey
-		}
-	}
-	
-	public func bitcoinMainnetKeychain() throws -> Keychain {
-		try checkMasterKey()
-		return try derivedKeychain(at: "m/44'/0'/0'/0")
-	}
+    
+    public func checkMasterKey() throws {
+        guard isMasterKey else {
+            throw KeyDerivationError.notMasterKey
+        }
+    }
+    
+    public func bitcoinMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/0'/0'/0")
+    }
     public func bitcoinMainnetChangeKeychain() throws -> Keychain {
         try checkMasterKey()
         return try derivedKeychain(at: "m/44'/0'/0'/1")
     }
-	public func bitcoinTestnetKeychain() throws -> Keychain {
-		try checkMasterKey()
-		return try derivedKeychain(at: "44'/1'/0'/0")
-	}
+    public func bitcoinTestnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "44'/1'/0'/0")
+    }
     
     public func ethereumMainnetKeychain() throws -> Keychain {
         try checkMasterKey()
@@ -276,29 +279,35 @@ extension Keychain {
     
     public func litecoinMainnetKeychain() throws -> Keychain {
         try checkMasterKey()
-        return try derivedKeychain(at: "m/44'/2'/0'/0")
+        let ln = Network(networkType: .main, xPubkey: 0x019da462, xPrivkey: 0x019d9cfe)
+        return try derivedKeychain(at: "m/44'/2'/0'/0", network: ln)
     }
     public func litecoinMainnetChangeKeychain() throws -> Keychain {
         try checkMasterKey()
-        return try derivedKeychain(at: "m/44'/2'/0'/1")
+        let ln = Network(networkType: .main, xPubkey: 0x019da462, xPrivkey: 0x019d9cfe)
+        return try derivedKeychain(at: "m/44'/2'/0'/1", network: ln)
     }
     
     public func decredMainnetKeychain() throws -> Keychain {
         try checkMasterKey()
-        return try derivedKeychain(at: "m/44'/42'/0'/0")
+        let dn = Network(networkType: .main, xPubkey: 0x02fda926, xPrivkey: 0x02fda4e8)
+        return try derivedKeychain(at: "m/44'/42'/0'/0", network: dn)
     }
     public func decredMainnetChangeKeychain() throws -> Keychain {
         try checkMasterKey()
-        return try derivedKeychain(at: "m/44'/42'/0'/1")
+        let dn = Network(networkType: .main, xPubkey: 0x02fda926, xPrivkey: 0x02fda4e8)
+        return try derivedKeychain(at: "m/44'/42'/0'/1", network: dn)
     }
     
     public func dogecoinMainnetKeychain() throws -> Keychain {
         try checkMasterKey()
-        return try derivedKeychain(at: "m/44'/3'/0'/0")
+        let dn = Network(networkType: .main, xPubkey: 0x02facafd, xPrivkey: 0x02fac398)
+        return try derivedKeychain(at: "m/44'/3'/0'/0", network: dn)
     }
     public func dogecoinMainnetChangeKeychain() throws -> Keychain {
         try checkMasterKey()
-        return try derivedKeychain(at: "m/44'/3'/0'/1")
+        let dn = Network(networkType: .main, xPubkey: 0x02facafd, xPrivkey: 0x02fac398)
+        return try derivedKeychain(at: "m/44'/3'/0'/1", network: dn)
     }
     
     public func dashMainnetKeychain() throws -> Keychain {

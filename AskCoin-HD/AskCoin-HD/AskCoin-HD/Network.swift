@@ -13,11 +13,16 @@ enum NetworkType {
 	case test
 }
 
-struct Network {
+public struct Network {
 	
 	var networkType: NetworkType = .main
 	
 	var isMainNet: Bool { get { return networkType == .main } }
 	var isTestNet: Bool { get { return networkType == .test } }
+    
+    var xPubkey: UInt32
+    var xPrivkey: UInt32
 	
 }
+
+
