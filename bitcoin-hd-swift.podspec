@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "bitcoin-hd-swift"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
   s.summary      = "An implementation of BIP32 with Swift"
 
   # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   An implementation of BIP32 with Swift, for iOS projects.
                    DESC
 
-  s.homepage     = "https://github.com/askcoin/bitcoin-hd-swift"
+  s.homepage     = "https://github.com/CikeQiu/bitcoin-hd-swift"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -53,7 +53,7 @@ Pod::Spec.new do |s|
   #  profile URL.
   #
 
-  s.author             = { "HongYang Qiu" => "qiuhongyang@askcoin.org" }
+  s.author             = { "HongYang Qiu" => "work_cocody@hotmail.com" }
   # Or just: s.author    = "HongYang Qiu"
   # s.authors            = { "HongYang Qiu" => "qiuhongyang@askcoin.org" }
   # s.social_media_url   = "http://twitter.com/HongYang Qiu"
@@ -80,7 +80,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/askcoin/bitcoin-hd-swift.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/CikeQiu/bitcoin-hd-swift.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

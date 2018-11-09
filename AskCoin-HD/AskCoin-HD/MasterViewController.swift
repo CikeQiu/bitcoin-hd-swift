@@ -44,35 +44,268 @@ class MasterViewController: UITableViewController {
 		let indexPath = IndexPath(row: 0, section: 0)
 		tableView.insertRows(at: [indexPath], with: .automatic)
 	}
+    
+    // MARK: - Key test
+    func testKeys() {
+        
+        let beginDate = Date()
+        let language: CKMnemonicLanguageType = .chinese
+        let mnemonic = try! CKMnemonic.generateMnemonic(strength: 128, language: language)
+        // print(mnemonic)
+        
+        let seed = try! CKMnemonic.deterministicSeedString(from: mnemonic, passphrase: "", language: language)
+        let keychain = try! Keychain(seedString: seed)
+        
+//        let msg = "Test".data(using: .utf8)
+//        let sign = CKSecp256k1.compactSign(msg, withPrivateKey: keychain.privateKey!)
+//        let result = CKSecp256k1.verifySignedData(sign, withMessageData: msg, usePublickKey: keychain.publicKey!)
+//        print(result)
+
+        let group = DispatchGroup()
+        let queue = DispatchQueue.global()
+        group.enter()
+        queue.async {
+            do {
+                let childKeychain = try keychain.bitcoinMainnetKeychain()
+                //            // print(childKeychain.extendedPrivateKey)
+                // print(childKeychain.extendedPublicKey)
+
+                let changeKeychain = try keychain.bitcoinMainnetChangeKeychain()
+                //            // print(changeKeychain.extendedPrivateKey)
+                // print(changeKeychain.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+
+        group.enter()
+        queue.async {
+            do {
+                let lite = try keychain.litecoinMainnetKeychain()
+                // print("lite\t" + lite.extendedPublicKey)
+                let liteChange = try keychain.litecoinMainnetChangeKeychain()
+                // print("liteChange\t" + liteChange.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+        
+        group.enter()
+        queue.async {
+            do {
+                let decred = try keychain.decredMainnetKeychain()
+                // print("decred\t" + decred.extendedPublicKey)
+                let decredChange = try keychain.decredMainnetChangeKeychain()
+                // print("decredChange\t" + decredChange.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+        
+        group.enter()
+        queue.async {
+            do {
+                let digibyte = try keychain.digibyteMainnetKeychain()
+                // print("digibyte\t" + digibyte.extendedPublicKey)
+                let digibyteChange = try keychain.digibyteMainnetChangeKeychain()
+                // print("digibyteChange\t" + digibyteChange.extendedPublicKey)
+
+                group.leave()
+                
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+        
+        group.enter()
+        queue.async {
+            do {
+                let dogecoin = try keychain.dogecoinMainnetKeychain()
+                // print("dogecoin\t" + dogecoin.extendedPublicKey)
+                let dogecoinChange = try keychain.dogecoinMainnetChangeKeychain()
+                // print("dogecoinChange\t" + dogecoinChange.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+
+        group.enter()
+        queue.async {
+            do {
+                let dash = try keychain.dashMainnetKeychain()
+                // print("dash\t" + dash.extendedPublicKey)
+                let dashChange = try keychain.dashMainnetChangeKeychain()
+                // print("dashChange\t" + dashChange.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+
+        group.enter()
+        queue.async {
+            do {
+                let dash = try keychain.dashMainnetKeychain()
+                // print("dash\t" + dash.extendedPublicKey)
+                let dashChange = try keychain.dashMainnetChangeKeychain()
+                // print("dashChange\t" + dashChange.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+
+        group.enter()
+        queue.async {
+            do {
+                let horizen = try keychain.horizenMainnetKeychain()
+                // print("horizen\t" + horizen.extendedPublicKey)
+                let horizenChange = try keychain.horizenMainnetChangeKeychain()
+                // print("horizenChange\t" + horizenChange.extendedPublicKey)
+
+                group.leave()
+                
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+
+        group.enter()
+        queue.async {
+            do {
+                let ethereum = try keychain.ethereumMainnetKeychain()
+                // print("ethereum\t" + ethereum.extendedPublicKey)
+
+                group.leave()
+
+            } catch {
+                // print(error)
+                group.leave()
+            }
+        }
+
+        group.notify(queue: DispatchQueue.main) {
+            let endDate = Date()
+            debugPrint("用时：\(endDate.timeIntervalSince(beginDate))s")
+        }
+        
+//        return
+        
+//        do {
+//            let seed = try! CKMnemonic.deterministicSeedString(from: mnemonic, passphrase: "", language: language)
+//            let keychain = try! Keychain(seedString: seed)
+////            // print(keychain.extendedPrivateKey)
+////            // print(keychain.extendedPublicKey)
+//
+//            let childKeychain = try keychain.bitcoinMainnetKeychain()
+////            // print(childKeychain.extendedPrivateKey)
+////             print(childKeychain.extendedPublicKey)
+//
+//            let changeKeychain = try keychain.bitcoinMainnetChangeKeychain()
+////            // print(changeKeychain.extendedPrivateKey)
+//            // print(changeKeychain.extendedPublicKey)
+//
+//            let lite = try keychain.litecoinMainnetKeychain()
+//            // print("lite\t" + lite.extendedPublicKey)
+//            let liteChange = try keychain.litecoinMainnetChangeKeychain()
+//            // print("liteChange\t" + liteChange.extendedPublicKey)
+//
+//            let decred = try keychain.decredMainnetKeychain()
+//            // print("decred\t" + decred.extendedPublicKey)
+//            let decredChange = try keychain.decredMainnetChangeKeychain()
+//            // print("decredChange\t" + decredChange.extendedPublicKey)
+//
+//            let digibyte = try keychain.digibyteMainnetKeychain()
+//            // print("digibyte\t" + digibyte.extendedPublicKey)
+//            let digibyteChange = try keychain.digibyteMainnetChangeKeychain()
+//            // print("digibyteChange\t" + digibyteChange.extendedPublicKey)
+//
+//            let dogecoin = try keychain.dogecoinMainnetKeychain()
+//            // print("dogecoin\t" + dogecoin.extendedPublicKey)
+//            let dogecoinChange = try keychain.dogecoinMainnetChangeKeychain()
+//            // print("dogecoinChange\t" + dogecoinChange.extendedPublicKey)
+//
+//            let dash = try keychain.dashMainnetKeychain()
+//            // print("dash\t" + dash.extendedPublicKey)
+//            let dashChange = try keychain.dashMainnetChangeKeychain()
+//            // print("dashChange\t" + dashChange.extendedPublicKey)
+//
+//            let horizen = try keychain.horizenMainnetKeychain()
+//            // print("horizen\t" + horizen.extendedPublicKey)
+//            let horizenChange = try keychain.horizenMainnetChangeKeychain()
+//            // print("horizenChange\t" + horizenChange.extendedPublicKey)
+//
+//            let ethereum = try keychain.ethereumMainnetKeychain()
+//            // print("ethereum\t" + ethereum.extendedPublicKey)
+//
+//        } catch {
+//            // print(error)
+//        }
+//        let endDate = Date()
+//        debugPrint("用时：\(endDate.timeIntervalSince(beginDate))s")
+//        do {
+//            let language: CKMnemonicLanguageType = .chinese
+//            let mnemonic = try CKMnemonic.generateMnemonic(strength: 128, language: language)
+//            // print(mnemonic)
+//            let seed = try CKMnemonic.deterministicSeedString(from: mnemonic, passphrase: "Test", language: language)
+//            // print(seed)
+//        } catch {
+//            // print(error)
+//        }
+    }
 	
-	// MARK: - Key test
-	func testKeys() {
-//		let mnemonic = "弓 帽 次 剂 测 妈 凭 吏 涨 火 搞 装"
-//		print(mnemonic)
-//		let seed = "000102030405060708090a0b0c0d0e0f"
-//		print(seed)
-//		do {
-//			let keychain = try Keychain(seedString: seed)
-//			print(keychain.extendedPrivateKey)
-//			print(keychain.extendedPublicKey)
-//			
-//			let childKeychain = try keychain.bitcoinMainnetKeychain()
-//			print(childKeychain.extendedPrivateKey)
-//			print(childKeychain.extendedPublicKey)
-//			
-//		} catch {
-//			print(error)
-//		}
-//		do {
-//			let language: CKMnemonicLanguageType = .chinese
-//			let mnemonic = try CKMnemonic.generateMnemonic(strength: 128, language: language)
-//			print(mnemonic)
-//			let seed = try CKMnemonic.deterministicSeedString(from: mnemonic, passphrase: "Test", language: language)
-//			print(seed)
-//		} catch {
-//			print(error)
-//		}
-	}
+//    // MARK: - Key test
+//    func testKeys() {
+//        let mnemonic = "弓 帽 次 剂 测 妈 凭 吏 涨 火 搞 装"
+//        // print(mnemonic)
+//        let seed = "000102030405060708090a0b0c0d0e0f"
+//        // print(seed)
+//        do {
+//            let keychain = try Keychain(seedString: seed)
+//            // print(keychain.extendedPrivateKey)
+//            // print(keychain.extendedPublicKey)
+//
+//            let childKeychain = try keychain.bitcoinMainnetKeychain()
+//            // print(childKeychain.extendedPrivateKey)
+//            // print(childKeychain.extendedPublicKey)
+//
+//        } catch {
+//            // print(error)
+//        }
+//        do {
+//            let language: CKMnemonicLanguageType = .chinese
+//            let mnemonic = try CKMnemonic.generateMnemonic(strength: 128, language: language)
+//            // print(mnemonic)
+//            let seed = try CKMnemonic.deterministicSeedString(from: mnemonic, passphrase: "Test", language: language)
+//            // print(seed)
+//        } catch {
+//            // print(error)
+//        }
+//    }
 
 	// MARK: - Segues
 

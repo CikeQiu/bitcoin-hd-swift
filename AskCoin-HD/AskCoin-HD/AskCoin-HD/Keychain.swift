@@ -32,7 +32,7 @@ public class Keychain: NSObject {
 		case notMasterKey
 	}
 	
-	private var privateKey: Data?
+	var privateKey: Data?
 	//	private var publicKey: Data?
 	private var chainCode: Data?
 	
@@ -80,7 +80,7 @@ public class Keychain: NSObject {
 		return 0
 	}()
 	
-	private lazy var publicKey: Data? = {
+	lazy var publicKey: Data? = {
 		guard let prvKey = self.privateKey else {
 			return nil
 		}
@@ -258,11 +258,74 @@ extension Keychain {
 	
 	public func bitcoinMainnetKeychain() throws -> Keychain {
 		try checkMasterKey()
-		return try derivedKeychain(at: "44'/0'")
+		return try derivedKeychain(at: "m/44'/0'/0'/0")
 	}
+    public func bitcoinMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/0'/0'/1")
+    }
 	public func bitcoinTestnetKeychain() throws -> Keychain {
 		try checkMasterKey()
-		return try derivedKeychain(at: "44'/1'")
+		return try derivedKeychain(at: "44'/1'/0'/0")
 	}
+    
+    public func ethereumMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/60'/0'/0/0")
+    }
+    
+    public func litecoinMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/2'/0'/0")
+    }
+    public func litecoinMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/2'/0'/1")
+    }
+    
+    public func decredMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/42'/0'/0")
+    }
+    public func decredMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/42'/0'/1")
+    }
+    
+    public func dogecoinMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/3'/0'/0")
+    }
+    public func dogecoinMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/3'/0'/1")
+    }
+    
+    public func dashMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/5'/0'/0")
+    }
+    public func dashMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/5'/0'/1")
+    }
+    
+    public func digibyteMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/20'/0'/0")
+    }
+    public func digibyteMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/20'/0'/1")
+    }
+    
+    public func horizenMainnetKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/121'/0'/0")
+    }
+    public func horizenMainnetChangeKeychain() throws -> Keychain {
+        try checkMasterKey()
+        return try derivedKeychain(at: "m/44'/121'/0'/1")
+    }
 }
 
